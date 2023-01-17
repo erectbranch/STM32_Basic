@@ -81,3 +81,157 @@ screen /dev/tty.usbmodem141203 115200
 > 표준으로 보통 110, 300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200, 128000 및 256000bit를 사용한다. 하지만 CLK에 따라 Baud Rate가 높으면 [error rate가 상승하는 경우](https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=fresh841005&logNo=220890582994)도 있으니 주의해야 한다.
 
 ---
+
+## 3.2 LED Blink
+
+> [LED 개발환경 구축: LED Blink](https://ahnbk.com/?p=1192)
+
+LED를 깜빡이는 기본 예제를 만들어 볼 것이다.
+
+STM32CubeIDE를 실행해서 상단 메뉴의 [File] - [New] - [STM32 Project]를 클릭한다.
+
+창이 뜨면 Board Selector를 누르고 Type과 MCU / MPU Series에서 알맞는 분류를 택한다.
+
+> 현재 실습으로 사용하는 STM32F746G-DISCO는 Discovery Kit, STM32F7를 선택하면 된다.
+
+![board select](images/board_select.png)
+
+[Next]를 누르면 Project 설정을 입력하는 창이 뜬다. Project Name은 "LED_Blink"를 입력하고 [Finish] 버튼을 누른다.
+
+![project name](images/project_name.png)
+
+> 여러 설정을 묻는 창이 뜨면 모두 Yes를 누른다.
+
+---
+
+### 3.2.1 Pinout & configuration 설정
+
+1. RCC 설정
+
+> [[STM32F746G-DISCO] RCC (Reset and Clock Control) 알아보기
+](https://rudalskim.tistory.com/266)
+
+![RCC](images/RCC.png)
+
+- LSE는 외부 저속 clock으로, 1MHz까지 사용할 수 있다.
+
+  > STM32F746G-DISCO보드에서는 LSE는 32.768KHz로 RTC용으로 사용)
+
+- HSE는 외부 고속 clock으로, 4~26MHz까지 사용할 수 있다.
+
+  > STM32F746G-DISCO보드에서는 HSE는 25MHz 외부 클럭을 사용
+
+좌측 Categories | A->Z 에서 RCC를 선택하고, HSE 및 LSE를 Disable로 바꾼다.
+
+RCC(Reset Clock Controller)란 STM32의 reset과 clock을 관장하는 장치다.
+
+2. GPIO 설정
+
+마찬가지로 [GPIO] 카테고리를 선택하면 활성화되어 있는 GPIO peripheral 장치의 세부 설정을 확인할 수 있다.
+
+> STM32F746G-DISCO 보드에는 D13에 LED가 장착되어 있다.
+
+GPIO(general-purpose input/output)란 input과 output을 포함한 동작이 runtime 시 사용자에 의해 제어될 수 있는 디지털 신호 핀을 말한다. 
+
+---
+
+### 3.2.2 clock configuration 설정
+
+![clk configuration](images/STM32F746G-DISCO_clk.png)
+
+- LSI는 내부 저속 clock으로 32KHz로 동작한다.
+
+- HSI는 내부 고속 clock으로 16MHz로 동작한다.
+
+- system clock은 최대 216MHz까지 사용할 수 있다.
+
+- PCLK1은 최대 54MHz, PCLK2는 최대 108MHz까지 사용할 수 있다.
+
+system clock 설정과 관련된 처리를 할 수 있다. 
+
+---
+
+### 3.2.3 generate code
+
+이제 앞서 설정한 상태에 맞게 코드를 생성할 수 있다. 상단 [Project] - [Generate Code] 메뉴를 클릭하면 project source code가 자동으로 생성된다. 
+
+> 앞서 설정한 정보를 바탕으로 clock 및 peripheral을 초기화하는 코드로 구성된다.
+
+[Core] - [Src] - [main.c] 파일을 열어 보자. 
+
+![main.c](images/main.c.png)
+
+상단 [Build] - [Build Project] 메뉴를 실행해서(compile 및 link가 진행된다.), 에러나 경고 없이 정상적으로 빌드가 완료되는지 확인한다.
+
+![build test](images/build_test.png)
+
+이제 LED가 깜빡이도록 source code를 작성해 보자. `HAL_Driver`에서 제공하는 function을 사용하면 된다.
+
+> Repository의 [Drivers] - [STM32F7xx_HAL_Driver] - [Src] 폴더에 이런 function들이 정의되어 있다.
+
+main.c source file에 다음과 같이 코드를 작성한다.
+
+> main.h 파일([Core] - [Inc] -[main.h]) 내 LED port 및 pin 번호가 선언되어 있다.
+
+- `HAL_GPIO_TogglePin()`: 해당 port의 pin의 출력을 toggle시켜주는 function
+
+- `HAL_Delay()`: ms 단위로 delay를 주는 function
+
+```c
+// ...
+/* main() 내부 */
+HAL_Init();
+
+SystemClock_Config();
+
+/* Initialize all configured peripherals */
+MX_GPIO_Init();
+MX_USART6_UART_Init();
+
+/* Infinite loop */
+/* USER CODE BEGIN WHILE */
+while(1)
+{
+    HAL_GPIO_TogglePin(GPIOI, GPIO_PIN_1);
+    HAL_Delay (500);
+    /* USER CODE END WHILE */
+}
+```
+
+참고로 사용자 code를 입력할 때는 반드시 CubeMX에서 생성한 "USER CODE BEGIN"과 "USER CODE END" 주석 사이에 위치해야 GENERATE CODE를 다시 수행해도 사용자 코드가 사라지지 않는다.
+
+코드 입력을 완료했다면 [Build] - [Build Project] 메뉴를 실행해서 빌드한다.
+
+---
+
+### 3.2.4 타깃 보드에 다운로드하여 실행
+
+> Window라면 장치 관리자에서 ST-Link Debug 및 COM Port가 인식된 것을 확인할 수 있다.
+
+상단 [Run] - [Run] 메뉴를 클릭하거나, Run 아이콘을 클릭한다. 클릭하면 launch configuration 창이 뜨는데 [OK]를 선택해 준다.
+
+> 만약 ST-Link server가 필요하다는 에러가 발생하면 다음 링크를 눌러 설치한다. [ST-Link server software module](https://www.st.com/content/st_com/en/products/development-tools/software-development-tools/stm32-software-development-tools/stm32-performance-and-debuggers/st-link-server.html)
+
+빌드가 정상적으로 완료되면 보드의 LED가 깜빡거리는 것을 확인할 수 있다.
+
+---
+
+### 3.2.5 타깃 보드에 다운로드하여 디버깅
+
+compiler가 미처 잡아주지 못하거나 논리적 오류는 디버깅 과정을 통해 찾아내야 한다.
+
+상단 [Run] - [Debug] 메뉴를 선택하고, 팝업 창에서 [Switch] 버튼을 누르면 Run과 마찬가지로 자동 빌드가 실행된다. 또한 Debug 화면으로 전환된다.
+
+Debug 모드에서는 code를 한 줄씩 실행해 볼 수 있으며, Breakpoint를 지정해 지정된 point에서만 정지하여 code를 살펴볼 수도 있다.
+
+![breakpoint](images/breakpoint.png)
+
+> code line의 '숫자'를 우클릭하면 Breakpoint를 추가/삭제할 수 있다.
+
+Toggle Breakpoint를 눌러 Breakpoint를 설정하면 왼쪽에 Breakpoint 표시가 나타난다.
+
+![Toggle Breakpoint](images/toggle_breakpoint.png)
+
+그리고 재개 아이콘을 클릭하면 LED가 재개 아이콘을 누를 때마다 toggle되는 것을 확인할 수 있다. 
+
+---

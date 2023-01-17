@@ -10,7 +10,7 @@
 
 <b>김남수 · 이진형 저</b></br>
 북랩 · 2020년 6월 17일 출시</br>
-[[ERRATA](https://www.wiley.com/en-us/Professional+CUDA+C+Programming-p-9781118739327)] [[Code Samples](https://media.wiley.com/product_ancillary/29/11187393/DOWNLOAD/CodeSamples.zip)] [[Solutions](https://media.wiley.com/product_ancillary/29/11187393/DOWNLOAD/Solutions.zip)]</b> 
+[[예제 코드](https://cafe.naver.com/androiddaq)] | [[깃허브](https://github.com/dauera80/stm32atoz)]</b> 
 
 </div>
 
