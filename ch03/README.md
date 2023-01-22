@@ -167,6 +167,12 @@ system clock 설정과 관련된 처리를 할 수 있다.
 
 이제 LED가 깜빡이도록 source code를 작성해 보자. `HAL_Driver`에서 제공하는 function을 사용하면 된다.
 
+> **HAL**(Hardware Abstraction Layer) driver는 MCU register에 직접 값을 써넣거나 주변 장치를 제어하는 등의 동작을 맡는 software이다. hardware의 변화를 신호로 감지하고, 어떤 hardware architecture라도 software가 동작할 수 있게 만든다.
+
+> 예를 들어 워드에서 문서를 프린트하려고 하는데 프린터가 바뀌었다고 하자. HAL이 있으면 워드 프로그램에 바뀐 프린터의 정보를 반영하지 않고도 출력이 가능하다.
+
+> 이처럼 hardware가 달라지더라도 HAL만 다시 작성하면, OS의 다른 부분은 특별히 고칠 필요 없이 다시 compile만 진행하면 된다. 게다가 일관성 있는 인터페이스를 제공하기 위해, 같은 종류의 hardware를 공통 명령어 집합으로 묶어(hardware abstraction) 프로그래머가 다양한 장비로 개발하는 것을 도와준다.
+
 > Repository의 [Drivers] - [STM32F7xx_HAL_Driver] - [Src] 폴더에 이런 function들이 정의되어 있다.
 
 main.c source file에 다음과 같이 코드를 작성한다.
@@ -201,6 +207,10 @@ while(1)
 참고로 사용자 code를 입력할 때는 반드시 CubeMX에서 생성한 "USER CODE BEGIN"과 "USER CODE END" 주석 사이에 위치해야 GENERATE CODE를 다시 수행해도 사용자 코드가 사라지지 않는다.
 
 코드 입력을 완료했다면 [Build] - [Build Project] 메뉴를 실행해서 빌드한다.
+
+> 다음은 여러 hardware의 줄임말을 정리한 사진이다.
+
+![hal driver abbreviation](images/hal_driver_abbreviation.jpeg)
 
 ---
 
