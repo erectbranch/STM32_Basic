@@ -167,21 +167,17 @@ system clock 설정과 관련된 처리를 할 수 있다.
 
 이제 LED가 깜빡이도록 source code를 작성해 보자. `HAL_Driver`에서 제공하는 function을 사용하면 된다.
 
-> **HAL**(Hardware Abstraction Layer) driver는 MCU register에 직접 값을 써넣거나 주변 장치를 제어하는 등의 동작을 맡는 software이다. hardware의 변화를 신호로 감지하고, 어떤 hardware architecture라도 software가 동작할 수 있게 만든다.
+**HAL**(Hardware Abstraction Layer) driver는 MCU register에 직접 값을 써넣거나 주변 장치를 제어하는 등의 동작을 맡는 software이다. hardware의 변화를 신호로 감지하고, 어떤 hardware architecture라도 software가 동작할 수 있게 만든다.
 
 > 예를 들어 워드에서 문서를 프린트하려고 하는데 프린터가 바뀌었다고 하자. HAL이 있으면 워드 프로그램에 바뀐 프린터의 정보를 반영하지 않고도 출력이 가능하다.
 
-> 이처럼 hardware가 달라지더라도 HAL만 다시 작성하면, OS의 다른 부분은 특별히 고칠 필요 없이 다시 compile만 진행하면 된다. 게다가 일관성 있는 인터페이스를 제공하기 위해, 같은 종류의 hardware를 공통 명령어 집합으로 묶어(hardware abstraction) 프로그래머가 다양한 장비로 개발하는 것을 도와준다.
+이처럼 hardware가 달라지더라도 HAL만 다시 작성하면, OS의 다른 부분은 특별히 고칠 필요 없이 다시 compile만 진행하면 된다. 게다가 일관성 있는 인터페이스를 제공하기 위해, 같은 종류의 hardware를 공통 명령어 집합으로 묶어(**hardware abstraction**) 프로그래머가 다양한 장비로 개발하는 것을 도와준다.
 
 > Repository의 [Drivers] - [STM32F7xx_HAL_Driver] - [Src] 폴더에 이런 function들이 정의되어 있다.
 
 main.c source file에 다음과 같이 코드를 작성한다.
 
 > main.h 파일([Core] - [Inc] -[main.h]) 내 LED port 및 pin 번호가 선언되어 있다.
-
-- `HAL_GPIO_TogglePin()`: 해당 port의 pin의 출력을 toggle시켜주는 function
-
-- `HAL_Delay()`: ms 단위로 delay를 주는 function
 
 ```c
 // ...
@@ -203,6 +199,22 @@ while(1)
     /* USER CODE END WHILE */
 }
 ```
+
+- `HAL_Init()`: HAL 초기화 function으로, 관련 resource를 초기화하고 function들을 사용할 수 있게 한다.
+
+- `SystemClock_Config()`: MCU의 system clock, 내부 clk, 외부 clk, 내부 oscillator 등을 설정해 주는 함수
+
+- `MX_GPIO_Init()`: General Purpose Input/Output(GPIO) 초기화 함수.
+
+  > GPIO는 embedded에서 일반적으로 사용하는 I/O port를 의미하고, 이 function을 호출하면 특정 GPIO를 입력 또는 출력으로 사용할 수 있다.
+
+- `MX_USART6_UART_Init()`: Universal Asynchronous Receiver/Transmitter(UART) 초기화 함수. 
+
+  > UART는 임베디드에서 일반적으로 사용하는, data를 직렬로 송수신할 수 있는 통신 프로토콜이다. 이 함수를 이용해서 MCU의 UART 포트를 초기화하게 된다.
+
+- `HAL_GPIO_TogglePin()`: 해당 port의 pin의 출력을 toggle시켜주는 function. parameter로 해당 포트와 핀을 전달한다.
+
+- `HAL_Delay()`: ms 단위로 delay를 주는 function
 
 참고로 사용자 code를 입력할 때는 반드시 CubeMX에서 생성한 "USER CODE BEGIN"과 "USER CODE END" 주석 사이에 위치해야 GENERATE CODE를 다시 수행해도 사용자 코드가 사라지지 않는다.
 
