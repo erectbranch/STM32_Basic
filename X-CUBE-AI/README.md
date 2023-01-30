@@ -360,7 +360,7 @@ void TchDspTask(void const * argument) {
 
 - 'TENSOR_ARENA_SIZE'는 model inference 과정에서 필요한 (RAM) memory space의 크기를 의미한다. model size와 input tensor size, 그리고 inference 작업에 필요한 memory space를 고려하여 설정한다.
 
-> 따라서 앞서 analyze로 본 RAM 사용량을 기준으로 size를 결정할 수는 있으나, inference 작업에서 다른 요인으로 쓰이는 memory(LCD 표시, event 처리 등)를 고려해서 예제에서는 우선 flash memory size만큼 할당했다. 이를 `tflm_c_create()`로 넘겨준다.
+> 예제에서는 앞서 analyze로 본 RAM 사용량을 기준으로 size를 결정하였다.
 
 ```c
 #define TENSOR_ARENA_SIZE 83456
