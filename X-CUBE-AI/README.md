@@ -60,6 +60,8 @@ STMicroelectronics.X-CUBE-AI에 해당되는 software pack을 [Install] 버튼�
 
 > [MNIST model](https://github.com/erectbranch/mnist-on-device): 튜토리얼, 모델 파일 다운로드
 
+> model을 IDE로 불러올 때 Core/Src/syscalls.c가 생성이 안 되는 버그가 있으니 주의. 또한 FreeRTOS - Configuration - Advanced Setting에서 Newlib settings를 Enable로 수정한다.
+
 workspace를 보면 좌측에 X-CUBE-AI 디렉터리가 새로 추가된 것을 확인할 수 있다.
 
 ![workspace: X-CUBE-AI 폴더](images/X-CUBE-AI_model_setup_1.png)
