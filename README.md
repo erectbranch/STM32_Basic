@@ -19,6 +19,15 @@
 - **MCU 기반 개발 환경에 익숙해지기.**
 
   > MCU 보드를 사용한 개발 예제 수행해 보기.
+<br/>
+
+## 🚩 정리한 문서 목록
+
+### 🔨 STM32CubeIDE 튜토리얼
+
+ - [LED Blink](https://github.com/erectbranch/STM32_Basic/tree/master/ch03)
+
+   > STM32CubeIDE project 생성, LED Blink 예제 수행, 시리얼 통신
 
 <br/>
 
