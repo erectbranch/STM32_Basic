@@ -29,6 +29,12 @@
 
    > STM32CubeIDE project 생성, LED Blink 예제 수행, 시리얼 통신
 
+### 🤖 X-CUBE-AI
+
+ - [MNIST 튜토리얼](https://github.com/erectbranch/STM32_Basic/tree/master/X-CUBE-AI)
+
+   > X-CUBE-AI를 이용한 MNIST 예제 구현하기
+
 <br/>
 
 ## :mag: 목차
