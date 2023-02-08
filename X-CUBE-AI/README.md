@@ -60,6 +60,8 @@ STMicroelectronics.X-CUBE-AI에 해당되는 software pack을 [Install] 버튼�
 
 > [MNIST model](https://github.com/erectbranch/mnist-on-device): 튜토리얼, 모델 파일 다운로드
 
+> 위 모델은 FreeRTOS를 사용하기 때문에, [Middleware] - [FreeRTOS] - [Tasks and Queues] 설정에서 Tasks를 Add로 추가해야 한다. 그리고 상단 메뉴의 [Project] - [Generate Code]를 누르면 자동으로 FreeRTOS로 해당 Tasks를 수행하도록 설계해 준다.
+
 > model을 IDE로 불러올 때 Core/Src/syscalls.c가 생성이 안 되는 버그가 있으니 주의. 또한 FreeRTOS - Configuration - Advanced Setting에서 Newlib settings를 Enable로 수정한다.
 
 workspace를 보면 좌측에 X-CUBE-AI 디렉터리가 새로 추가된 것을 확인할 수 있다.
@@ -548,6 +550,39 @@ tflm_c_input(tflm_c_model* model, const void* data, size_t data_size);
 > 흔히 clock tick을 심장 박동에 비유한다. 예를 들어 100Hz의 경우 초당 100번 발생하므로 period는 10ms가 된다.(1s = 1000ms)
 
 > scheduler를 주기적으로 호출할 수 있는 것도 바로 clock tick 덕분이다. 너무 많은 clock tick이 발생하면 interrupt handler를 수행하는 빈도가 높아져서 performance가 낮아지므로 적절한 수치를 설정하는 것이 중요하다.
+
+참고로 main.c의 USER CODE 라인에 다음 코드를 추가하면 printf()를 사용할 수 있다.
+
+> 할당할 UART는 [Connectivity]에서 확인한다.
+
+```c
+int _read(int file, char *ptr, int len)
+{
+	if(HAL_UART_Receive(&huart1, (uint8_t *)ptr, len, 10) == HAL_OK)
+		return len;
+	return -1;
+}
+
+int _write(int file, char *ptr, int len)
+{
+	if(HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, 10) == HAL_OK)
+		return len;
+	return -1;
+}
+```
+
+가령 tasks.c에 다음과 같이 printf()를 추가하면, UART1을 통해 PC로 log 출력을 받을 수 있다.
+
+```c
+void printlog(const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+
+  uint8_t buffer[LOG_BUFFER_SIZE];
+  vsprintf((char *)buffer, format, args);
+  printf("%s\n", buffer);
+  //...
+```
 
 ---
 
