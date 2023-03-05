@@ -551,9 +551,23 @@ tflm_c_input(tflm_c_model* model, const void* data, size_t data_size);
 
 > scheduler를 주기적으로 호출할 수 있는 것도 바로 clock tick 덕분이다. 너무 많은 clock tick이 발생하면 interrupt handler를 수행하는 빈도가 높아져서 performance가 낮아지므로 적절한 수치를 설정하는 것이 중요하다.
 
-참고로 main.c의 USER CODE 라인에 다음 코드를 추가하면 printf()를 사용할 수 있다.
+---
 
-> 할당할 UART는 [Connectivity]에서 확인한다.
+### 6.4 통신(UART) 설정
+
+inference 실행 중 UART 통신 기능을 이용해서 터미널로 특정 출력을 받아볼 수 있다. 우선 출력 확인을 위해서 [Connectivity] 메뉴에서 USART를 확인한다.
+
+![Connectivity_USART](images/Connectivity_USART.png)
+
+- 출력으로 UART1을 사용했다. Baud Rate 설정을 기억할 것.
+
+다음과 같은 방법으로 문자열 출력을 할 수도 있다.
+
+```c
+HAL_UART_Transmit(&huart1, "Hello", 6, 100);
+```
+
+하지만 더 편리한 방법으로, main.c의 USER CODE 라인에 다음 코드를 추가해서(원래 함수가 weak로 정의되어 있어서 이를 override한다.) printf()를 사용할 수 있다.
 
 ```c
 int _read(int file, char *ptr, int len)
@@ -571,7 +585,11 @@ int _write(int file, char *ptr, int len)
 }
 ```
 
+> &huart1 부분을 본인의 UART에 맞게 수정해야 한다.
+
 가령 tasks.c에 다음과 같이 printf()를 추가하면, UART1을 통해 PC로 log 출력을 받을 수 있다.
+
+여기서 주의할 점은 `printf("%s\n", buffer)`와 같이 개행 문자 `\n`을 붙여주어야 한다. 그렇지 않으면 `printf`의 특성상 출력이 제대로 되지 않는다.
 
 ```c
 void printlog(const char* format, ...) {
@@ -584,9 +602,15 @@ void printlog(const char* format, ...) {
   //...
 ```
 
+여러 방법으로 터미널에서 UART 통신을 받을 수 있지만, MAC OS 기준으로는 minicom을 설치해서 터미널에서 출력을 받아보는 방법이 간단하다.
+
+```bash
+minicom -b 115200 -D /dev/tty.{} # usb까지 치고 TAB키를 누르면 자동완성으로 확인도 가능하다.
+```
+
 ---
 
-## 6.4 타깃 보드에 다운로드하여 실행
+## 6.5 타깃 보드에 다운로드하여 실행
 
 상단의 [Run] - [Run] 메뉴(혹은 Run 아이콘)를 눌러 실행한다.
 
