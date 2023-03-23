@@ -6,10 +6,6 @@ AI model을 TFLM용으로 변환하는 과정은 TinyML github 정리를 참조�
 
 > [TinyML_Basic](https://github.com/erectbranch/TinyML_Basic): ch04 참조
 
-또한 [STM32CubeIDE용 compiler 설정](https://fastbitlab.com/microcontroller-embedded-c-programming-lecture-54-compiler-settings-on-stm32cubeide/)을 미리 진행해야 error 없이 빌드가 가능하다. 
-
-> [Arm GNU Toolchain 다운로드](https://developer.arm.com/downloads/-/gnu-rm)
-
 ---
 
 ## 6.1 X-CUBE-AI 설치
@@ -24,7 +20,7 @@ TFLM으로 변환한 AI model을 간편하게 기기에 배포할 수 있는 X-C
 
 [File] - [New] - [STM32 Project]으로 새 project를 만든 뒤, 배포할 기기를 선택한다.
 
-    ![X-CUBE-AI 설치 1](images/X-CUBE-AI_install_1.png)
+  ![X-CUBE-AI 설치 1](images/X-CUBE-AI_install_1.png)
 
 그 다음 Pinout & Configuration 바로 아래 <Software Packs>를 누르면 Select Components를 선택할 수 있다.
 
@@ -189,17 +185,27 @@ project에 ../Drivers/BSP 디렉터리를 만든 뒤, 펌웨어와 함께 설치
 ../Drivers/BSP/STM32746G-Discovery
 ```
 
+혹은 Project Explorer에서 해당 경로를 우클릭 한 뒤 [Add/remove include path]를 클릭하여 추가해 줄 수도 있다.
+
+![add/remove include path](images/add_remove_include_path.png)
+
+![add/remove include path 2](images/add_include_path_2.png)
+
 또한 font도 추가해 줘야 한다. '/Users/xxx/STM32Cube/Repository/STM32Cube_FW_F7_V1.7.0/Utilities/Fonts'에 위치해 있다. 이를 project에 ../Utilities/Fonts/ 디렉터리를 만든 뒤 붙여넣는다.
 
 ![header와 fonts](images/header_and_fonts.png)
 
-> 만약 [MCU G++ linker error](https://www.openstm32.org/forumthread2449)가 발생한다면, [File] - [Properties] - [C/C++ Build] - [Setting]의 [Tool Settings] 탭에서 [MCU GCC Linker] - [Miscellaneous]에 있는 flags에 '-specs=nano.specs -specs=nosys.specs'를 [추가](https://stackoverflow.com/questions/65453293/what-are-nosys-nano-rdimon-terms-when-using-arm-gcc)해 준다.(Reduced C library를 사용한다는 의미다.)
+만약 [nano.specs]와 관련된 error가 발생하면 compiler setting이 제대로 되어 있는지 확인한다.
 
-```
--specs=nano.specs -specs=nosys.specs
-```
+1. Project Explorer에서 프로젝트를 우클릭 - [Properties] 클릭
 
-> 만약 [nano.specs]와 관련된 error가 발생하면 [해당 문서](https://siliconlabs.force.com/community/s/article/problems-with-c-library-inclusion-in-mbed-project-imported-into-simplicity-studi?language=en_US)를 참조한다. GNU ARM C++ Linker를 'Base C Library'로 바꾼다.
+    ![properties](images/setting_properties.png)
+
+2. compiler 설정을 확인
+
+    ![compiler](images/compiler_setting.png)
+
+    - Runtime library: `Reduced C, reduced C++ (--specs=nano.specs)`인지 확인한다.
 
 ---
 
